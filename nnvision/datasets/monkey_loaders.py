@@ -188,14 +188,16 @@ def monkey_static_loader(dataset,
     if not isinstance(time_bins_sum, Iterable):
         time_bins_sum = tuple(range(time_bins_sum))
 
-    if image_file is not None:
+    if image_file is not None and os.path.exists(image_file):
         with open(image_file, "rb") as pkl:
             images = pickle.load(pkl)
     else:
         image_paths = os.listdir(image_cache_path)
         images = []
         for image in image_paths:
-            images.append(np.load(os.path.join(image_cache_path, image)))
+            image_path = os.path.join(image_cache_path, image)
+            if not os.path.isdir(image_path):
+                images.append(np.load(image_path))
         images = np.stack(images)
 
     images = images[:, :, :, None]
